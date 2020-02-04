@@ -144,7 +144,7 @@ namespace EDLib {
        * @return proper complex representation for current frequency
        */
       std::complex<double> freq_point(int index) {
-        return std::is_base_of<alps::gf::real_frequency_mesh, Mesh>::value ? std::complex<double>(_omega.points()[index], p["lanc.IDELTA"]) : std::complex<double>(0.0, _omega.points()[index]);
+        return std::is_base_of<alps::gf::real_frequency_mesh, Mesh>::value ? std::complex<double>(_omega.points()[index], 0.01) : std::complex<double>(0.0, _omega.points()[index]);
       };
 
       std::string suffix() {

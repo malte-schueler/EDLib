@@ -108,6 +108,7 @@ namespace EDLib {
       using Lanczos < Hamiltonian, MeshFactory, Args... >::hamiltonian;
       using Lanczos < Hamiltonian, MeshFactory, Args... >::beta;
       using Lanczos < Hamiltonian, MeshFactory, Args... >::compute_sym_continued_fraction;
+      using Lanczos < Hamiltonian, MeshFactory, Args... >::suffix;
       using typename Lanczos < Hamiltonian, MeshFactory, Args... >::Mesh;
       using typename Lanczos < Hamiltonian, MeshFactory, Args... >::precision;
       using Sector = typename Hamiltonian::ModelType::Sector;
