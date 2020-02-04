@@ -28,6 +28,7 @@ namespace EDLib {
     params.define < int >("lanc.NOMEGA", 32, "Number of fermionic frequencies");
     params.define < double >("lanc.EMIN", -3, "Lowest real frequency value");
     params.define < double >("lanc.EMAX", 3, "Largest real frequency value");
+    params.define < double >("lanc.IDELTA", 0, "Broadening of Green function. 0->PI/BETA");
     params.define < int >("lanc.NLANC", 100, "Number of Lanczos iterations");
     params.define < double >("lanc.BETA", 10.0, "Inverse temperature");
     params.define < double >("lanc.BOLTZMANN_CUTOFF", 1e-12, "Cutoff for Boltzmann factor");

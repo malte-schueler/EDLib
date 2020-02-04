@@ -422,7 +422,7 @@ namespace EDLib {
         if(rank == 0) {
 #endif
           if(_g_orbs.size()){
-            gf.save(ar, path + "/Chi" + _type +"_omega");
+            gf.save(ar, path + "/Chi" + _type +"_omega"+suffix());
             std::ostringstream Gomega_name;
             Gomega_name << "Chi"<<_type<<"_omega";
             std::ofstream G_omega_file(Gomega_name.str().c_str());
@@ -432,9 +432,9 @@ namespace EDLib {
           std::cout << "Statsum: " << _Z << std::endl;
           ar[path + "/@Statsum"] << _Z;
           if(_g_ij_orb_pairs.size()){
-            gf_ij.save(ar, path + "/Chi" + _type +"_ij_omega");
+            gf_ij.save(ar, path + "/Chi" + _type +"_ij_omega"+suffix());
             std::ostringstream Gomega_name2;
-            Gomega_name2 << "Chi_ij_"<<_type<<"_omega";
+            Gomega_name2 << "Chi_ij_"<<_type<<"_omega"<<suffix();
             std::ofstream G_omega_file2(Gomega_name2.str().c_str());
             G_omega_file2<< std::setprecision(14) << gf_ij;
             G_omega_file2.close();
