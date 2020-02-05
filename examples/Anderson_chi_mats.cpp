@@ -62,15 +62,19 @@ int main(int argc, const char ** argv) {
     }
 #endif
     // Construct Green's function object
-    EDLib::gf::GreensFunction < HType,  EDLib::MatsubaraMeshFactory, alps::gf::statistics::statistics_type> greensFunction(params, ham,alps::gf::statistics::statistics_type::FERMIONIC);
+    // EDLib::gf::GreensFunction < HType,  EDLib::MatsubaraMeshFactory, alps::gf::statistics::statistics_type> greensFunction(params, ham,alps::gf::statistics::statistics_type::FERMIONIC);
     // Compute and save Green's function
-    greensFunction.compute();
-    greensFunction.save(ar, "results");
-    // Init two particle Green's function object
-    //EDLib::gf::ChiLoc<HType, alps::gf::real_frequency_mesh> susc(params, ham);
-    // Compute and save spin susceptibility
-    //susc.compute();
-    //susc.save(ar, "results");
+    // greensFunction.compute();
+    // greensFunction.save(ar, "results");
+    EDLib::gf::ChiLoc<HType, EDLib::MatsubaraMeshFactory, alps::gf::statistics::statistics_type > susc(params, ham, alps::gf::statistics::BOSONIC);
+    // compute average magnetic moment                                                                                                                                                                                                 
+    double avg = 0;
+    for(auto x : observables[so._M_]) {
+      avg += x / (2.0*observables[so._M_].size());
+    }
+    // compute spin susceptibility                                                                                                                                                                                                     
+    susc.compute<EDLib::gf::SzOperator<double>>(&avg);
+    susc.save(ar, "results");
     // Compute and save charge susceptibility
     //susc.compute<EDLib::gf::NOperator<double> >();
     //susc.save(ar, "results");

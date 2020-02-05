@@ -108,6 +108,7 @@ namespace EDLib {
       using Lanczos < Hamiltonian, MeshFactory, Args... >::hamiltonian;
       using Lanczos < Hamiltonian, MeshFactory, Args... >::beta;
       using Lanczos < Hamiltonian, MeshFactory, Args... >::compute_sym_continued_fraction;
+      using Lanczos < Hamiltonian, MeshFactory, Args... >::suffix;
       using typename Lanczos < Hamiltonian, MeshFactory, Args... >::Mesh;
       using typename Lanczos < Hamiltonian, MeshFactory, Args... >::precision;
       using Sector = typename Hamiltonian::ModelType::Sector;
@@ -422,9 +423,9 @@ namespace EDLib {
         if(rank == 0) {
 #endif
           if(_g_orbs.size()){
-            gf.save(ar, path + "/Chi" + _type +"_omega");
+            gf.save(ar, path + "/Chi" + _type +"_omega"+suffix());
             std::ostringstream Gomega_name;
-            Gomega_name << "Chi"<<_type<<"_omega";
+            Gomega_name << "Chi"<<_type<<"_omega"<<suffix();
             std::ofstream G_omega_file(Gomega_name.str().c_str());
             G_omega_file << std::setprecision(14) << gf;
             G_omega_file.close();
@@ -432,9 +433,9 @@ namespace EDLib {
           std::cout << "Statsum: " << _Z << std::endl;
           ar[path + "/@Statsum"] << _Z;
           if(_g_ij_orb_pairs.size()){
-            gf_ij.save(ar, path + "/Chi" + _type +"_ij_omega");
+            gf_ij.save(ar, path + "/Chi" + _type +"_ij_omega"+suffix());
             std::ostringstream Gomega_name2;
-            Gomega_name2 << "Chi_ij_"<<_type<<"_omega";
+            Gomega_name2 << "Chi_ij_"<<_type<<"_omega"<<suffix();
             std::ofstream G_omega_file2(Gomega_name2.str().c_str());
             G_omega_file2<< std::setprecision(14) << gf_ij;
             G_omega_file2.close();
