@@ -2,8 +2,8 @@
 // Created by iskakoff on 20/04/17.
 //
 
-#ifndef EDLIB_FERMIBOSONSTORAGE_H
-#define EDLIB_FERMIBOSONSTORAGE_H
+#ifndef HUBBARD_FERMIBOSONSTORAGE_H
+#define HUBBARD_FERMIBOSONSTORAGE_H
 
 
 #include <edlib/Storage.h>
@@ -90,4 +90,4 @@ namespace EDLib {
 
   }
 }
-#endif //EDLIB_FERMIBOSONSTORAGE_H
+#endif //HUBBARD_FERMIBOSONSTORAGE_H

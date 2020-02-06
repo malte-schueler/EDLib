@@ -2,8 +2,8 @@
 // Created by iskakoff on 20/04/17.
 //
 
-#ifndef EDLIB_HOLSTEINANDERSONMODEL_H
-#define EDLIB_HOLSTEINANDERSONMODEL_H
+#ifndef HUBBARD_HOLSTEINANDERSONMODEL_H
+#define HUBBARD_HOLSTEINANDERSONMODEL_H
 
 
 #include <edlib/FermionicModel.h>
@@ -352,4 +352,4 @@ namespace EDLib {
   }
 }
 
-#endif //EDLIB_HOLSTEINANDERSONMODEL_H
+#endif //HUBBARD_HOLSTEINANDERSONMODEL_H

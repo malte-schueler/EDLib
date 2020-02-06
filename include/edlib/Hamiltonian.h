@@ -2,8 +2,8 @@
 // Created by iskakoff on 19/07/16.
 //
 
-#ifndef EDLIB_HAMILTONIAN_H
-#define EDLIB_HAMILTONIAN_H
+#ifndef HUBBARD_HAMILTONIAN_H
+#define HUBBARD_HAMILTONIAN_H
 
 #include <set>
 #include <type_traits>
@@ -58,20 +58,25 @@ namespace EDLib {
 #endif
       int k =0;
       while (_model.symmetry().next_sector()) {
-#ifdef USE_MPI
-        if (rank == 0){
-#endif
-        std::cout<<"Diagonalize sector "<<_model.symmetry().sector()<<std::endl;
-#ifdef USE_MPI
-        }
-#endif
         fill();
+
+	
+        #ifdef USE_MPI
+	if (rank == 0){
+        #endif
+        std::cout << "Diagonalizing sector:" << _model.symmetry().sector() << std::endl;
+
+        #ifdef USE_MPI
+	}
+        #endif
+
+
         /**
          * perform ARPACK call
          */
         int info = _storage.diag();
         if (info != 0) {
-          /// abnormal return from ARPACK. Eigen-pair has not been computed
+          /// abnormal return from ARPACK. Eigen-pair have not been computed
 #ifdef USE_MPI
           if (rank == 0) std::cerr<<"Eigenvalue have not been computed."<<std::endl;
 #endif
@@ -112,10 +117,6 @@ namespace EDLib {
       return _model;
     }
 
-    void constant_shift(prec shift) {
-      _storage.constant_shift(shift);
-    }
-
 #ifdef USE_MPI
     const MPI_Comm& comm() const {
       return _comm;
@@ -154,4 +155,4 @@ namespace EDLib {
   typedef Hamiltonian < Storage::SpinResolvedStorage < Model::SingleImpurityAndersonModel < double > > > SRSSIAMHamiltonian;
   typedef Hamiltonian < Storage::SpinResolvedStorage < Model::SingleImpurityAndersonModel < float > > > SRSSIAMHamiltonian_float;
 }
-#endif //EDLIB_HAMILTONIAN_H
+#endif //HUBBARD_HAMILTONIAN_H

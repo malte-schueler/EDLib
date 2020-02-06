@@ -2,8 +2,8 @@
 // Created by iskakoff on 18/08/16.
 //
 
-#ifndef EDLIB_EDPARAMS_H
-#define EDLIB_EDPARAMS_H
+#ifndef HUBBARD_EDPARAMS_H
+#define HUBBARD_EDPARAMS_H
 
 
 #include <alps/params.hpp>
@@ -36,4 +36,4 @@ namespace EDLib {
     params.define < int >("siam.NORBITALS", 1, "Number of orbitals in single impurity Anderson Model.");
   }
 }
-#endif //EDLIB_EDPARAMS_H
+#endif //HUBBARD_EDPARAMS_H

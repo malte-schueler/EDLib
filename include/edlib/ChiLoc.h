@@ -2,10 +2,10 @@
 // Created by iskakoff on 03/01/17.
 //
 
-#ifndef EDLIB_CHILOC_H
-#define EDLIB_CHILOC_H
+#ifndef HUBBARD_CHILOC_H
+#define HUBBARD_CHILOC_H
 
-#include <limits>
+
 #include <iostream>
 #include <iomanip>
 #include "Lanczos.h"
@@ -100,17 +100,16 @@ namespace EDLib {
      * @tparam Mesh - type of frequency mesh. can be either alps::gf::real_frequency_mesh or alps::gf::matsubara_positive_only
      * @tparam Args - additional parameters for Mesh. For matsubara mesh should be alps::gf::statistics::statistics_type
      */
-    template<class Hamiltonian, class MeshFactory, typename ... Args>
-    class ChiLoc : public Lanczos < Hamiltonian, MeshFactory, Args... > {
-      using Lanczos < Hamiltonian, MeshFactory, Args... >::zero_freq;
-      using Lanczos < Hamiltonian, MeshFactory, Args... >::omega;
-      using Lanczos < Hamiltonian, MeshFactory, Args... >::lanczos;
-      using Lanczos < Hamiltonian, MeshFactory, Args... >::hamiltonian;
-      using Lanczos < Hamiltonian, MeshFactory, Args... >::beta;
-      using Lanczos < Hamiltonian, MeshFactory, Args... >::compute_sym_continued_fraction;
-      using Lanczos < Hamiltonian, MeshFactory, Args... >::suffix;
-      using typename Lanczos < Hamiltonian, MeshFactory, Args... >::Mesh;
-      using typename Lanczos < Hamiltonian, MeshFactory, Args... >::precision;
+    template<class Hamiltonian, class Mesh, typename ... Args>
+    class ChiLoc : public Lanczos < Hamiltonian, Mesh, Args... > {
+      using Lanczos < Hamiltonian, Mesh, Args... >::zero_freq;
+      using Lanczos < Hamiltonian, Mesh, Args... >::omega;
+      using Lanczos < Hamiltonian, Mesh, Args... >::lanczos;
+      using Lanczos < Hamiltonian, Mesh, Args... >::hamiltonian;
+      using Lanczos < Hamiltonian, Mesh, Args... >::beta;
+      using Lanczos < Hamiltonian, Mesh, Args... >::compute_sym_continued_fraction;
+      using Lanczos < Hamiltonian, Mesh, Args... >::suffix;
+      using typename Lanczos < Hamiltonian, Mesh, Args... >::precision;
       using Sector = typename Hamiltonian::ModelType::Sector;
       /// Green's function conatainer type
       typedef alps::gf::two_index_gf<std::complex<double>, Mesh, alps::gf::index_mesh>  GF_TYPE;
@@ -121,9 +120,9 @@ namespace EDLib {
        * @param h - Hamiltonian instance
        * @param args - additional parameters for mesh. For example for matsubara mesh should it be alps::gf::statistics::statistics_type::BOSONIC
        */
-      ChiLoc(alps::params &p, Hamiltonian &h, Args... args) : Lanczos < Hamiltonian, MeshFactory, Args... >(p, h, args...), _model(h.model()),
-                                                        gf(omega(), alps::gf::index_mesh(h.model().interacting_orbitals())),
-                                                        gf_ij(omega(), alps::gf::index_mesh(h.model().interacting_orbitals()*h.model().interacting_orbitals())),
+      ChiLoc(alps::params &p, Hamiltonian &h, Args... args) : Lanczos < Hamiltonian, Mesh, Args... >(p, h, args...), _model(h.model()),
+                                                        gf(Lanczos < Hamiltonian, Mesh, Args... >::omega(), alps::gf::index_mesh(h.model().interacting_orbitals())),
+                                                        gf_ij(Lanczos < Hamiltonian, Mesh, Args... >::omega(), alps::gf::index_mesh(h.model().interacting_orbitals()*h.model().interacting_orbitals())),
                                                         _cutoff(p["lanc.BOLTZMANN_CUTOFF"]), _type("Sz") {
         // we can not evaluate Green's function if eigenvectors have not been computed.
         if(p["storage.EIGENVALUES_ONLY"] == 1) {
@@ -163,7 +162,8 @@ namespace EDLib {
               }
             }
             if(!found){
-              _g_orbs.push_back(_g_ij_orb_pairs[ii][jj]);
+              std::ostringstream msg;
+              throw std::logic_error("Nonlocal GF requires local GFs for both orbitals.");
             }
           }
         }
@@ -206,7 +206,7 @@ namespace EDLib {
         for (auto kkk = hamiltonian().eigenpairs().begin(); kkk != hamiltonian().eigenpairs().end(); kkk++) {
           const EigenPair<precision, typename Hamiltonian::ModelType::Sector>& pair = *kkk;
           precision boltzmann_f = std::exp(-(pair.eigenvalue() - groundstate.eigenvalue()) * beta());
-          if (std::abs(_cutoff - boltzmann_f) > std::numeric_limits<precision>::epsilon() && boltzmann_f < _cutoff ) {
+          if (boltzmann_f < _cutoff) {
             // Skipped by Boltzmann factor.
             continue;
           }
@@ -425,7 +425,7 @@ namespace EDLib {
           if(_g_orbs.size()){
             gf.save(ar, path + "/Chi" + _type +"_omega"+suffix());
             std::ostringstream Gomega_name;
-            Gomega_name << "Chi"<<_type<<"_omega"<<suffix();
+            Gomega_name << "Chi"<<_type<<"_omega";
             std::ofstream G_omega_file(Gomega_name.str().c_str());
             G_omega_file << std::setprecision(14) << gf;
             G_omega_file.close();
@@ -433,7 +433,7 @@ namespace EDLib {
           std::cout << "Statsum: " << _Z << std::endl;
           ar[path + "/@Statsum"] << _Z;
           if(_g_ij_orb_pairs.size()){
-            gf_ij.save(ar, path + "/Chi" + _type +"_ij_omega"+suffix());
+	    gf_ij.save(ar, path + "/Chi_ij_" + _type +"_omega"+suffix());
             std::ostringstream Gomega_name2;
             Gomega_name2 << "Chi_ij_"<<_type<<"_omega"<<suffix();
             std::ofstream G_omega_file2(Gomega_name2.str().c_str());
@@ -534,4 +534,4 @@ namespace EDLib {
 }
 
 
-#endif //EDLIB_CHILOC_H
+#endif //HUBBARD_CHILOC_H

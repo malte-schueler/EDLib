@@ -2,8 +2,8 @@
 // Created by iskakoff on 01/08/16.
 //
 
-#ifndef EDLIB_LANCZOS_H
-#define EDLIB_LANCZOS_H
+#ifndef HUBBARD_LANCZOS_H
+#define HUBBARD_LANCZOS_H
 
 #include <alps/gf/mesh.hpp>
 #include <alps/gf/gf.hpp>
@@ -11,17 +11,18 @@
 
 #include <cmath>
 
+#include "MeshFactory.h"
+
 namespace EDLib {
   namespace gf {
-    template<class Hamiltonian, class MeshFactory, typename ... Args>
+    template<class Hamiltonian, class Mesh=alps::gf::matsubara_positive_mesh, typename ... Args>
     class Lanczos {
     protected:
-      using precision=typename Hamiltonian::ModelType::precision;
-      using Mesh=typename MeshFactory::MeshType;
-      using mesh_index=typename Mesh::index_type;
+      typedef typename Hamiltonian::ModelType::precision precision;
+      typedef typename Mesh::index_type mesh_index;
     public:
       Lanczos(alps::params &p, Hamiltonian &h, Args...args) :
-        ham(h), _omega(MeshFactory::createMesh(p, args...)),_Nl(p["lanc.NLANC"]),
+        ham(h), _omega(MeshFactory<Mesh, Args...>::createMesh(p, args...)),_Nl(p["lanc.NLANC"]),
         alfalanc(p["lanc.NLANC"], 0.0), betalanc(int(p["lanc.NLANC"]) + 1, 0.0), det(p["lanc.NLANC"], 0), dl(p["lanc.NLANC"], 0.0), _beta(p["lanc.BETA"].as<precision>()) {}
 
       const Mesh &omega() const {
@@ -144,7 +145,7 @@ namespace EDLib {
        * @return proper complex representation for current frequency
        */
       std::complex<double> freq_point(int index) {
-        return std::is_base_of<alps::gf::real_frequency_mesh, Mesh>::value ? std::complex<double>(_omega.points()[index], M_PI/_beta) : std::complex<double>(0.0, _omega.points()[index]);
+        return std::is_base_of<alps::gf::matsubara_positive_mesh, Mesh>::value ? std::complex<double>(0.0, _omega.points()[index]) : std::complex<double>(_omega.points()[index], 0.01);
       };
 
       std::string suffix() {
@@ -225,4 +226,4 @@ namespace EDLib {
     };
   }
 }
-#endif //EDLIB_LANCZOS_H
+#endif //HUBBARD_LANCZOS_H

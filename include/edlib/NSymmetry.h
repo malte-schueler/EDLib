@@ -2,8 +2,8 @@
 // Created by iskakoff on 21/08/16.
 //
 
-#ifndef EDLIB_NSYMMETRY_H
-#define EDLIB_NSYMMETRY_H
+#ifndef HUBBARD_NSYMMETRY_H
+#define HUBBARD_NSYMMETRY_H
 
 
 #include <queue>
@@ -30,11 +30,9 @@ namespace EDLib {
 
         size_t size() const { return _size; }
 
-        void print(std::ostream & out) const {
-          out << _n;
+        void print() const {
+          std::cout << _n;
         }
-        
-        void print() const {print(std::cout);}
 
       private:
         int _n;
@@ -159,4 +157,4 @@ namespace EDLib {
   }
 }
 
-#endif //EDLIB_NSYMMETRY_H
+#endif //HUBBARD_NSYMMETRY_H

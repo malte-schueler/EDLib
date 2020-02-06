@@ -21,24 +21,26 @@ l = 2
 U = np.real(Kanamori_interaction(l, U_int=2.0, J_hund=0.3))
 xmu = 4.5
 Eps0 = np.array([[0.,0.], [0.,0.], [0.,0.], [0.,0.], [0.,0.] ])
-Vk_ =   [ np.array([ [0.5,  0.5] ]),
+Vk =   [ np.array([ [0.5,  0.5] ]),
          np.array([ [0.5,  0.5] ]),
          np.array([ [0.5,  0.5] ]),
          np.array([ [0.5,  0.5] ]),
          np.array([ [0.5,  0.5] ]) ]
-Epsk = np.array([ [-1.0,-1.0],
-                  [-1.0,-1.0],
-                  [-1.0,-1.0],
-                  [-1.0,-1.0],
-                  [-1.0,-1.0] ])
+Epsk = [ np.array([ [-1.0,-1.0] ]),
+         np.array([ [-1.0,-1.0] ]),
+         np.array([ [-1.0,-1.0] ]),
+         np.array([ [-1.0,-1.0] ]),
+         np.array([ [-1.0,-1.0] ]) ]
+
+tk = [ np.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]),
+       np.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]),
+       np.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]),
+       np.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]),
+       np.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]) ]
 
 ml = 2*l + 1
-H0 = np.zeros((ml,ml,2))
-for i in range(ml):
-    H0[i, i,:] = Eps0[i,:]
-
 Nk = 1
-Ns = Eps0.shape[0] + Epsk.shape[0]
+Ns = len(Eps0) + len(Epsk)
 
 sectors = np.array([[3,3],])
 
@@ -51,23 +53,21 @@ hop_g.create_dataset("values", data=sectors)
 
 bath = data.create_group("Bath")
 
-bath["Epsk/values"] = Epsk
 for i in range(ml):
-    if(Epsk.shape != Vk[i].shape):
+    if(Epsk[i].shape != Vk[i].shape):
         raise "Incorrect shape for Hybridisation and Epsk"
+    Epsk_g = bath.create_group("Epsk_" + str(i))
+    Epsk_g.create_dataset("values", shape=(len(Epsk[i]),2,), data=Epsk[i], dtype=np.float)
     Vk_g = bath.create_group("Vk_" + str(i))
     Vk_g.create_dataset("values", data=np.array(Vk[i]), dtype=np.float)
-    t0_g = data.create_group("H0_" + str(i))
-    t0_g.create_dataset("values", data=np.array(H0[i]), dtype=np.float)
+    t0_g = data.create_group("t0_" + str(i))
+    t0_g.create_dataset("values", data=np.array(tk[i]), dtype=np.float)
 
-UU = np.zeros((2,2) + U.shape)
-UU[0,0] = U
-UU[0,1] = U
-UU[1,0] = U
-UU[1,1] = U
+hop_g = data.create_group("Eps0")
+hop_g.create_dataset("values", data=Eps0)
 
 int_g = data.create_group("interaction")
-int_ds = int_g.create_dataset("values", shape=(2,2,ml,ml,ml,ml,), data=UU)
+int_ds = int_g.create_dataset("values", shape=(ml,ml,ml,ml,), data=U)
 
 #int_g = data.create_group("chemical_potential")
 int_ds = data.create_dataset("mu", shape=(), data=xmu)

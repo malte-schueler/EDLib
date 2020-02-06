@@ -2,8 +2,8 @@
 // Created by iskakoff on 23/08/16.
 //
 
-#ifndef EDLIB_SPINRESOLVEDSTORAGE_H
-#define EDLIB_SPINRESOLVEDSTORAGE_H
+#ifndef HUBBARD_SPINRESOLVEDSTORAGE_H
+#define HUBBARD_SPINRESOLVEDSTORAGE_H
 
 #include <bitset>
 #include <iomanip>
@@ -461,10 +461,6 @@ namespace EDLib {
       }
 #endif
 
-      void constant_shift(prec shift) {
-        std::transform( _diagonal.begin(), _diagonal.end(), _diagonal.begin(), std::bind2nd(std::plus<prec>(), shift));
-      }
-
     private:
       /// Current model
       Model &_model;
@@ -639,4 +635,4 @@ namespace EDLib {
     };
   }
 }
-#endif //EDLIB_SPINRESOLVEDSTORAGE_H
+#endif //HUBBARD_SPINRESOLVEDSTORAGE_H

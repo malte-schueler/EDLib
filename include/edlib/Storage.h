@@ -2,8 +2,8 @@
 // Created by iskakoff on 21/07/16.
 //
 
-#ifndef EDLIB_STORAGE_H
-#define EDLIB_STORAGE_H
+#ifndef HUBBARD_STORAGE_H
+#define HUBBARD_STORAGE_H
 
 #include "fortranbinding.h"
 #include <iostream>
@@ -50,6 +50,7 @@ namespace EDLib {
           zero_eigenapair();
           return finalize(0);
         }
+        std::cout << "diag matrix:" << n << std::endl;
         int ncv = std::min(_ncv, _ntot);
         int nev = std::min(_nev, ncv - 1);
         char which[3] = "SA";
@@ -325,4 +326,4 @@ namespace EDLib {
 //    }
   }
 }
-#endif //EDLIB_STORAGE_H
+#endif //HUBBARD_STORAGE_H

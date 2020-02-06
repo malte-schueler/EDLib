@@ -2,8 +2,8 @@
 // Created by iskakoff on 29/07/16.
 //
 
-#ifndef EDLIB_HUBBARDMODEL_H
-#define EDLIB_HUBBARDMODEL_H
+#ifndef HUBBARD_HUBBARDMODEL_H
+#define HUBBARD_HUBBARDMODEL_H
 
 #include <vector>
 
@@ -223,4 +223,4 @@ namespace EDLib {
 
   }
 }
-#endif //EDLIB_HUBBARDMODEL_H
+#endif //HUBBARD_HUBBARDMODEL_H

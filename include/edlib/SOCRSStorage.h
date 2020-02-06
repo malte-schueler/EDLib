@@ -2,8 +2,8 @@
 // Created by iskakoff on 28/07/16.
 //
 
-#ifndef EDLIB_SOCRSSTORAGE_H
-#define EDLIB_SOCRSSTORAGE_H
+#ifndef HUBBARD_SOCRSSTORAGE_H
+#define HUBBARD_SOCRSSTORAGE_H
 
 #include <vector>
 #include <iomanip>
@@ -245,10 +245,6 @@ namespace EDLib {
       int &nprocs() { return _nthreads; }
 #endif
 
-      void constant_shift(prec shift) {
-        std::transform( dvalues.begin(), dvalues.end(), dvalues.begin(), std::bind2nd(std::plus<prec>(), shift));
-      }
-
     private:
       // Internal storage structure
       std::vector < prec > dvalues;
@@ -328,4 +324,4 @@ namespace EDLib {
     };
   }
 }
-#endif //EDLIB_SOCRSSTORAGE_H
+#endif //HUBBARD_SOCRSSTORAGE_H

@@ -2,10 +2,9 @@
 // Created by iskakoff on 19/07/16.
 //
 
-#ifndef EDLIB_SYMMETRY_H
-#define EDLIB_SYMMETRY_H
+#ifndef HUBBARD_SYMMETRY_H
+#define HUBBARD_SYMMETRY_H
 
-#include <alps/hdf5.hpp>
 #include <alps/params.hpp>
 
 namespace EDLib {
@@ -70,4 +69,4 @@ namespace EDLib {
     };
   }
 }
-#endif //EDLIB_SYMMETRY_H
+#endif //HUBBARD_SYMMETRY_H

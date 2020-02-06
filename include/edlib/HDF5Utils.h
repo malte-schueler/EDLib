@@ -2,8 +2,8 @@
 // Created by iskakoff on 11/01/17.
 //
 
-#ifndef EDLIB_HDF5UTILS_HPP
-#define EDLIB_HDF5UTILS_HPP
+#ifndef HUBBARD_HDF5UTILS_HPP
+#define HUBBARD_HDF5UTILS_HPP
 
 
 /**
@@ -87,8 +87,32 @@ namespace EDLib {
         ar[root_path + "/static_observables/" + ob->first]<<ob->second;
       }
     }
+
+    /**
+     * Store static observables into hdf5 archive
+     * @param Ham - type of Hamiltonian instance
+     * @param observables - map with static observables
+     * @param ar - hdf5 archive
+     * @param root_path - root path in hdf5 archive
+     */
+    template<typename Ham>
+    void save_static_observables_mpi(const Ham &h, const std::map < std::string, std::vector < double>> &observables, alps::hdf5::archive& ar, const std::string &root_path) {
+      #ifdef USE_MPI
+      int rank;
+      MPI_Comm_rank(h.comm(), &rank);
+      if(!rank){
+#endif
+	for(auto ob = observables.begin(); ob != observables.end(); ++ob){
+        ar[root_path + "/static_observables/" + ob->first]<<ob->second;
+      }
+      #ifdef USE_MPI
+      }
+#endif
+    }
+
+
   }
 }
 
 
-#endif //EDLIB_HDF5UTILS_HPP
+#endif //HUBBARD_HDF5UTILS_HPP

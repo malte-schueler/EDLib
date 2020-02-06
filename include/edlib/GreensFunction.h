@@ -2,10 +2,10 @@
 // Created by iskakoff on 01/08/16.
 //
 
-#ifndef EDLIB_GREENSFUNCTION_H
-#define EDLIB_GREENSFUNCTION_H
+#ifndef HUBBARD_GREENSFUNCTION_H
+#define HUBBARD_GREENSFUNCTION_H
 
-#include <limits>
+
 #include <iomanip>
 #include "Lanczos.h"
 #include "EigenPair.h"
@@ -22,16 +22,15 @@ namespace EDLib {
      * @tparam Mesh - type of frequency mesh. can be either alps::gf::real_frequency_mesh or alps::gf::matsubara_positive_only
      * @tparam Args - additional Mesh parametrization for alps::gf::matsubara_positive_only
      */
-    template<class Hamiltonian, typename MeshFactory, typename... Args>
-    class GreensFunction : public Lanczos < Hamiltonian, MeshFactory, Args...> {
-      using Lanczos < Hamiltonian, MeshFactory, Args... >::hamiltonian;
-      using Lanczos < Hamiltonian, MeshFactory, Args... >::lanczos;
-      using Lanczos < Hamiltonian, MeshFactory, Args... >::omega;
-      using Lanczos < Hamiltonian, MeshFactory, Args... >::beta;
-      using Lanczos < Hamiltonian, MeshFactory, Args... >::compute_continued_fraction;
-      using Lanczos < Hamiltonian, MeshFactory, Args... >::suffix;
-      using typename Lanczos < Hamiltonian, MeshFactory, Args... >::Mesh;
-      using typename Lanczos < Hamiltonian, MeshFactory, Args... >::precision;
+    template<class Hamiltonian, typename Mesh, typename... Args>
+    class GreensFunction : public Lanczos < Hamiltonian, Mesh, Args...> {
+      using Lanczos < Hamiltonian, Mesh, Args... >::hamiltonian;
+      using Lanczos < Hamiltonian, Mesh, Args... >::lanczos;
+      using Lanczos < Hamiltonian, Mesh, Args... >::omega;
+      using Lanczos < Hamiltonian, Mesh, Args... >::beta;
+      using Lanczos < Hamiltonian, Mesh, Args... >::compute_continued_fraction;
+      using Lanczos < Hamiltonian, Mesh, Args... >::suffix;
+      using typename Lanczos < Hamiltonian, Mesh, Args... >::precision;
     public:
 
       /// Green's function type
@@ -51,13 +50,13 @@ namespace EDLib {
        * @param h - Hamiltonain instance
        * @param args - additional parameters for Mesh. For example for Matsubara mesh should it be alps::gf::statistics::statistics_type::FERMIONIC
        */
-      GreensFunction(alps::params &p, Hamiltonian &h, Args ... args) : Lanczos < Hamiltonian, MeshFactory, Args... >(p, h, args...), _model(h.model()),
-                                                        _G_g(omega(), alps::gf::index_mesh(h.model().interacting_orbitals()), alps::gf::index_mesh(p["NSPINS"].as<int>())),
-                                                        _G_l(omega(), alps::gf::index_mesh(h.model().interacting_orbitals()), alps::gf::index_mesh(p["NSPINS"].as<int>())),
-                                                        _G(omega(), alps::gf::index_mesh(h.model().interacting_orbitals()), alps::gf::index_mesh(p["NSPINS"].as<int>())),
-                                                        _G_g_ij(omega(), alps::gf::index_mesh(h.model().interacting_orbitals() * h.model().interacting_orbitals()), alps::gf::index_mesh(p["NSPINS"].as<int>())),
-                                                        _G_l_ij(omega(), alps::gf::index_mesh(h.model().interacting_orbitals() * h.model().interacting_orbitals()), alps::gf::index_mesh(p["NSPINS"].as<int>())),
-                                                        _G_ij(omega(), alps::gf::index_mesh(h.model().interacting_orbitals() * h.model().interacting_orbitals()), alps::gf::index_mesh(p["NSPINS"].as<int>())),
+      GreensFunction(alps::params &p, Hamiltonian &h, Args ... args) : Lanczos < Hamiltonian, Mesh, Args... >(p, h, args...), _model(h.model()),
+                                                        _G_g(Lanczos < Hamiltonian, Mesh, Args... >::omega(), alps::gf::index_mesh(h.model().interacting_orbitals()), alps::gf::index_mesh(p["NSPINS"].as<int>())),
+                                                        _G_l(Lanczos < Hamiltonian, Mesh, Args... >::omega(), alps::gf::index_mesh(h.model().interacting_orbitals()), alps::gf::index_mesh(p["NSPINS"].as<int>())),
+                                                        _G(Lanczos < Hamiltonian, Mesh, Args... >::omega(), alps::gf::index_mesh(h.model().interacting_orbitals()), alps::gf::index_mesh(p["NSPINS"].as<int>())),
+                                                        _G_g_ij(Lanczos < Hamiltonian, Mesh, Args... >::omega(), alps::gf::index_mesh(h.model().interacting_orbitals() * h.model().interacting_orbitals()), alps::gf::index_mesh(p["NSPINS"].as<int>())),
+                                                        _G_l_ij(Lanczos < Hamiltonian, Mesh, Args... >::omega(), alps::gf::index_mesh(h.model().interacting_orbitals() * h.model().interacting_orbitals()), alps::gf::index_mesh(p["NSPINS"].as<int>())),
+                                                        _G_ij(Lanczos < Hamiltonian, Mesh, Args... >::omega(), alps::gf::index_mesh(h.model().interacting_orbitals() * h.model().interacting_orbitals()), alps::gf::index_mesh(p["NSPINS"].as<int>())),
                                                         _cutoff(p["lanc.BOLTZMANN_CUTOFF"]) {
         if(p["storage.EIGENVALUES_ONLY"] == 1) {
           throw std::logic_error("Eigenvectors have not been computed. Green's function can not be evaluated.");
@@ -96,7 +95,8 @@ namespace EDLib {
               }
             }
             if(!found){
-              _g_orbs.push_back(_g_ij_orb_pairs[ii][jj]);
+              std::ostringstream msg;
+              throw std::logic_error("Nonlocal GF requires local GFs for both orbitals.");
             }
           }
         }
@@ -132,7 +132,7 @@ namespace EDLib {
           // compute Boltzmann-factor
           precision boltzmann_f = std::exp(-(pair.eigenvalue() - groundstate.eigenvalue()) * beta());
           // Skip all eigenvalues with Boltzmann-factor smaller than cutoff
-          if (std::abs(_cutoff - boltzmann_f) > std::numeric_limits<precision>::epsilon() && boltzmann_f < _cutoff ) {
+          if (boltzmann_f < _cutoff) {
             continue;
           }
 #ifdef USE_MPI
@@ -181,7 +181,7 @@ namespace EDLib {
           std::cout << "Statsum: " << _Z << std::endl;
           ar[path + "/@Statsum"] << _Z;
           if(_g_ij_orb_pairs.size()){
-            _G_ij.save(ar, path + "/G_ij_omega" + suffix());
+	    _G_ij.save(ar, path + "/G_ij_omega" + suffix());
             std::ostringstream Gomega_name2;
             Gomega_name2 << "G_ij_omega"<<suffix();
             std::ofstream G_omega_file2(Gomega_name2.str().c_str());
@@ -395,7 +395,7 @@ namespace EDLib {
         hamiltonian().storage().reset();
         int nup_new = _model.symmetry().sector().nup() + (1 - spin);
         int ndn_new = _model.symmetry().sector().ndown() + spin;
-        typename Hamiltonian::ModelType::Sector next_sec = _model.symmetry().create_particle(spin);
+        typename Hamiltonian::ModelType::Sector next_sec = _model.symmetry().create_partice(spin);
         outvec.assign(hamiltonian().storage().vector_size(next_sec), 0.0);
         common::statistics.registerEvent("adag");
         for(auto orb : orbitals) {
@@ -437,7 +437,7 @@ namespace EDLib {
         hamiltonian().storage().reset();
         int nup_new = _model.symmetry().sector().nup() - (1 - spin);
         int ndn_new = _model.symmetry().sector().ndown() - spin;
-        typename Hamiltonian::ModelType::Sector next_sec = _model.symmetry().destroy_particle(spin);
+        typename Hamiltonian::ModelType::Sector next_sec = _model.symmetry().destroy_partice(spin);
         outvec.assign(hamiltonian().storage().vector_size(next_sec), precision(0.0));
         common::statistics.registerEvent("a");
         for(auto orb : orbitals) {
@@ -464,4 +464,4 @@ namespace EDLib {
   }
 }
 
-#endif //EDLIB_GREENSFUNCTION_H
+#endif //HUBBARD_GREENSFUNCTION_H

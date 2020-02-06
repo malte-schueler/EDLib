@@ -2,8 +2,8 @@
 // Created by iskakoff on 19/07/16.
 //
 
-#ifndef EDLIB_SZCOMBINATION_H
-#define EDLIB_SZCOMBINATION_H
+#ifndef HUBBARD_SZCOMBINATION_H
+#define HUBBARD_SZCOMBINATION_H
 
 #include <queue>
 
@@ -41,20 +41,11 @@ namespace EDLib {
         size_t size() const { return _size; }
 
         void print() const {
-          print(std::cout);
+          std::cout << _nup << " " << _ndown;
         }
-        
-        void print(std::ostream & out) const {
-          out << _nup << " " << _ndown;
-        }
-
-        bool operator<(const Sector & s) const{
-          return _size < s._size || (_size == s._size && _nup <  s._nup && _ndown < s._ndown )
-                                 || (_size == s._size && _nup == s._nup && _ndown < s._ndown );
-        }
-
-        bool operator>(const Sector & s) const{
-          return s < *this;
+      protected:
+        bool operator<(Sector s) {
+          return _size < s._size;
         }
 
       private:
@@ -73,27 +64,21 @@ namespace EDLib {
                                 _comb(_Ns), basis(_Ns + 1), ninv(_Ns + 1, std::vector < int >(1 << _Ns, 0)),
                                 _first(true) {
         initial_fill();
-        std::vector<Sector> sectors;
         if (p.exists("arpack.SECTOR") && bool(p["arpack.SECTOR"])) {
-          std::vector < std::vector < int > > sectors_list;
+          std::vector < std::vector < int > > sectors;
           std::string input = p["INPUT_FILE"];
           alps::hdf5::archive input_file(input, "r");
-          input_file >> alps::make_pvp("sectors/values", sectors_list);
+          input_file >> alps::make_pvp("sectors/values", sectors);
           input_file.close();
-          for (int i = 0; i < sectors_list.size(); ++i) {
-            sectors.push_back( SzSymmetry::Sector(sectors_list[i][0], sectors_list[i][1],
-                                                  (size_t) (_comb.c_n_k(_Ns, sectors_list[i][0]) * _comb.c_n_k(_Ns, sectors_list[i][1]))));
+          for (int i = 0; i < sectors.size(); ++i) {
+            _sectors.push(SzSymmetry::Sector(sectors[i][0], sectors[i][1], (size_t) (_comb.c_n_k(_Ns, sectors[i][0]) * _comb.c_n_k(_Ns, sectors[i][1]))));
           }
         } else {
           for (int i = 0; i <= _Ns; ++i) {
             for (int j = 0; j <= _Ns; ++j) {
-              sectors.push_back(SzSymmetry::Sector(i, j, (size_t) (_comb.c_n_k(_Ns, i) * _comb.c_n_k(_Ns, j))));
+              _sectors.push(SzSymmetry::Sector(i, j, (size_t) (_comb.c_n_k(_Ns, i) * _comb.c_n_k(_Ns, j))));
             }
           }
-        }
-        std::sort(sectors.begin(), sectors.end(), std::less<Sector>());
-        for(auto const& e : sectors) {
-          _sectors.push(e);
         }
       }
 
@@ -174,12 +159,12 @@ namespace EDLib {
         return spin == 0 ? _current_sector.nup() > 0 : _current_sector.ndown() > 0;
       }
 
-      SzSymmetry::Sector destroy_particle(int spin) {
+      SzSymmetry::Sector destroy_partice(int spin) {
         return Sector(_current_sector.nup() - (1 - spin), _current_sector.ndown() - spin,
                       _comb.c_n_k(_Ns, _current_sector.nup() - (1 - spin)) * _comb.c_n_k(_Ns, _current_sector.ndown() - spin));
       }
 
-      SzSymmetry::Sector create_particle(int spin) {
+      SzSymmetry::Sector create_partice(int spin) {
         return Sector(_current_sector.nup() + (1 - spin), _current_sector.ndown() + spin,
                       _comb.c_n_k(_Ns, _current_sector.nup() + (1 - spin)) * _comb.c_n_k(_Ns, _current_sector.ndown() + spin));
       }
@@ -235,4 +220,4 @@ namespace EDLib {
   }
 }
 
-#endif //EDLIB_SZCOMBINATION_H
+#endif //HUBBARD_SZCOMBINATION_H
